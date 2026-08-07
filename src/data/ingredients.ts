@@ -323,11 +323,12 @@ export const INGREDIENTS: IngredientNutrition[] = [
   // Carnes / ovos
   {
     id: "sobrecoxa-frango-grelhado",
-    nome: "Frango sobrecoxa grelhado",
+    nome: "Frango sobrecoxa (Sadia, crua, com pele)",
     categoria: "Carnes",
-    porcaoDescricao: "100g (pós-cocção)",
-    porPorcao: { calorias: 209, proteina: 26, gordura: 11, sodio: 90 },
-    fonte: "estimativa_padrao",
+    porcaoDescricao: "100g (cru)",
+    porPorcao: { calorias: 232, proteina: 15, carboidratos: 1, gordura: 19, fibra: 0, sodio: 480 },
+    fonte: "rotulo_oficial",
+    observacao: "Rótulo é da peça crua. Depois de grelhada, a concentração de proteína/gordura por 100g sobe um pouco pela perda de água na cocção.",
   },
   {
     id: "asinhas-temperadas",
