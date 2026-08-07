@@ -108,10 +108,10 @@ export const INGREDIENTS: IngredientNutrition[] = [
     id: "whey-nutrigood-milkshake-chocolate",
     nome: "Whey Nutrigood Milkshake Chocolate",
     categoria: "Whey protein",
-    porcaoDescricao: "30g (1 dose)",
-    porPorcao: { proteina: 21 },
-    fonte: "estimativa_padrao",
-    observacao: "Só a proteína (21g) é confirmada publicamente. kcal/carbo/gordura: checar o rótulo físico.",
+    porcaoDescricao: "30g (1 scoop dosador)",
+    porPorcao: { calorias: 120, carboidratos: 5, acucar: 0, proteina: 21, gordura: 1.8, fibra: 0, sodio: 70 },
+    fonte: "rotulo_oficial",
+    observacao: "Aminograma completo no rótulo (leucina 2060mg, isoleucina 1160mg, valina 1030mg etc.) não rastreado no app — só macros/sódio.",
   },
 
   // Pães
@@ -284,8 +284,9 @@ export const INGREDIENTS: IngredientNutrition[] = [
     nome: "Monster Original Zero",
     categoria: "Energéticos",
     porcaoDescricao: "473ml (lata)",
-    porPorcao: { calorias: 10, acucar: 0, sodio: 370 },
-    fonte: "estimativa_padrao",
+    porPorcao: { calorias: 12, carboidratos: 5.6, acucar: 0, sodio: 312, vitaminaB3: 30, vitaminaB6: 2.6, vitaminaB12: 4.8 },
+    fonte: "rotulo_oficial",
+    observacao: "Rótulo também traz 1600mg taurina, 120mg cafeína e 8mg inositol por lata — não rastreados como colunas no app.",
   },
   {
     id: "monster-pacific-punch",
