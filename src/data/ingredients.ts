@@ -136,17 +136,17 @@ export const INGREDIENTS: IngredientNutrition[] = [
     id: "pao-de-queijo",
     nome: "Pão de queijo",
     categoria: "Pães",
-    porcaoDescricao: "1 unidade (~30g)",
-    porPorcao: { calorias: 100, carboidratos: 10, proteina: 2.2, gordura: 5.5, sodio: 150 },
-    fonte: "estimativa_padrao",
+    porcaoDescricao: "50g (2 unidades)",
+    porPorcao: { calorias: 133, carboidratos: 16, proteina: 2.9, gordura: 6.5 },
+    fonte: "rotulo_oficial",
   },
   {
     id: "tortilla-fit-rap10",
     nome: "Tortilla Fit Rap10",
     categoria: "Pães",
-    porcaoDescricao: "1 unidade (~45g)",
-    porPorcao: { calorias: 100, carboidratos: 15, proteina: 4, gordura: 2, fibra: 6, sodio: 180 },
-    fonte: "estimativa_padrao",
+    porcaoDescricao: "40g (1 unidade)",
+    porPorcao: { calorias: 101, carboidratos: 21, acucar: 0.3, proteina: 2.8, gordura: 0.8, fibra: 3.8, sodio: 172 },
+    fonte: "rotulo_oficial",
   },
 
   // Leite e laticínios
@@ -154,10 +154,9 @@ export const INGREDIENTS: IngredientNutrition[] = [
     id: "leite-integral-itambe",
     nome: "Leite Integral Itambé",
     categoria: "Laticínios",
-    porcaoDescricao: "200ml",
-    porPorcao: { calorias: 123, carboidratos: 9, proteina: 6, gordura: 6.5, sodio: 82 },
-    fonte: "estimativa_agregador",
-    observacao: "Rótulo oficial só em imagem — valores combinam agregadores + padrão de leite integral brasileiro.",
+    porcaoDescricao: "200ml (1 copo)",
+    porPorcao: { calorias: 113, carboidratos: 8.8, proteina: 6, gordura: 6, sodio: 138 },
+    fonte: "rotulo_oficial",
   },
   {
     id: "queijo-mucarela",
@@ -172,8 +171,8 @@ export const INGREDIENTS: IngredientNutrition[] = [
     nome: "Iogurte Batavo Probio2 Ameixa",
     categoria: "Laticínios",
     porcaoDescricao: "170g (pacote)",
-    porPorcao: { calorias: 122, carboidratos: 22, proteina: 4.1, sodio: 68 },
-    fonte: "estimativa_agregador",
+    porPorcao: { calorias: 122, carboidratos: 22, acucar: 22, gordura: 1.9, fibra: 2.6, sodio: 68 },
+    fonte: "rotulo_oficial",
   },
 
   // Enlatados Gomes da Costa
@@ -258,8 +257,8 @@ export const INGREDIENTS: IngredientNutrition[] = [
     nome: "Coca-Cola",
     categoria: "Bebidas",
     porcaoDescricao: "350ml (lata)",
-    porPorcao: { calorias: 140, carboidratos: 39, acucar: 39, sodio: 15 },
-    fonte: "estimativa_padrao",
+    porPorcao: { calorias: 149, carboidratos: 37, acucar: 37, gordura: 0, fibra: 0, sodio: 18 },
+    fonte: "rotulo_oficial",
   },
 
   // Energéticos Monster
