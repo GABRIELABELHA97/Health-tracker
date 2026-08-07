@@ -1,0 +1,425 @@
+import type { IngredientNutrition } from "../types";
+
+/**
+ * Catálogo de "adicionar rápido". Sempre que o rótulo oficial não tem a tabela completa
+ * publicada em texto (só em imagem), os valores foram aproximados por agregadores ou por
+ * referência padrão (TACO / valores típicos da categoria) — marcados em `fonte` e, quando
+ * relevante, detalhados em `observacao`. Corrija/expanda a qualquer momento em Perfil/Metas.
+ */
+export const INGREDIENTS: IngredientNutrition[] = [
+  // Bebidas proteicas
+  {
+    id: "proforce-cacau",
+    nome: "Proforce (23g) — Piracanjuba ProForce Cacau",
+    categoria: "Bebidas proteicas",
+    porcaoDescricao: "250ml",
+    porPorcao: { calorias: 174, proteina: 23, carboidratos: 17, gordura: 1.2 },
+    fonte: "estimativa_agregador",
+    observacao: "Proteína/colágeno/BCAA confirmados no site oficial; kcal/carbo/gordura são aproximados (agregador terceiro).",
+  },
+  {
+    id: "yopro-chocolate",
+    nome: "Yopro 15g chocolate",
+    categoria: "Bebidas proteicas",
+    porcaoDescricao: "250ml",
+    porPorcao: {
+      calorias: 172.5,
+      proteina: 15,
+      carboidratos: 21,
+      acucar: 18.25,
+      gordura: 2.75,
+      fibra: 1.5,
+      sodio: 230,
+    },
+    fonte: "rotulo_oficial",
+  },
+  {
+    id: "yopro-coco",
+    nome: "Yopro 15g coco",
+    categoria: "Bebidas proteicas",
+    porcaoDescricao: "250ml",
+    porPorcao: {
+      calorias: 172.5,
+      proteina: 15,
+      carboidratos: 21,
+      acucar: 18.25,
+      gordura: 2.75,
+      fibra: 1.5,
+      sodio: 230,
+    },
+    fonte: "estimativa_padrao",
+    observacao: "Perfil nutricional assumido igual à linha Chocolate (mesma base YoPro 15g/250ml); confirme no rótulo do sabor.",
+  },
+  {
+    id: "yopro-morango",
+    nome: "Yopro 15g morango",
+    categoria: "Bebidas proteicas",
+    porcaoDescricao: "250ml",
+    porPorcao: {
+      calorias: 172.5,
+      proteina: 15,
+      carboidratos: 21,
+      acucar: 18.25,
+      gordura: 2.75,
+      fibra: 1.5,
+      sodio: 230,
+    },
+    fonte: "estimativa_padrao",
+    observacao: "Perfil nutricional assumido igual à linha Chocolate (mesma base YoPro 15g/250ml); confirme no rótulo do sabor.",
+  },
+  {
+    id: "bebida-proteica-porto-alegre",
+    nome: "Bebida Proteica Porto Alegre",
+    categoria: "Bebidas proteicas",
+    porcaoDescricao: "250ml",
+    porPorcao: { proteina: 15 },
+    fonte: "estimativa_padrao",
+    observacao: "Só a proteína (15g) e 'zero lactose' são confirmados publicamente. Calorias/carbo/gordura/sódio: checar o rótulo físico.",
+  },
+  {
+    id: "itambe-whey",
+    nome: "Itambé Whey",
+    categoria: "Bebidas proteicas",
+    porcaoDescricao: "250ml",
+    porPorcao: { calorias: 170, proteina: 15, carboidratos: 20, gordura: 3, sodio: 200 },
+    fonte: "estimativa_padrao",
+    observacao: "Estimado por similaridade com bebidas proteicas UHT 15g/250ml da categoria — confirmar no rótulo.",
+  },
+  {
+    id: "tres-coracoes-power-whey",
+    nome: "Três Corações Power Whey",
+    categoria: "Bebidas proteicas",
+    porcaoDescricao: "1 dose (~30g pó)",
+    porPorcao: { calorias: 120, proteina: 21, carboidratos: 4, gordura: 2.5, sodio: 100 },
+    fonte: "estimativa_padrao",
+    observacao: "Estimado por similaridade com whey concentrado 30g — confirmar no rótulo.",
+  },
+
+  // Whey em pó
+  {
+    id: "whey-max-titanium-baunilha",
+    nome: "Whey Max Titanium Baunilha",
+    categoria: "Whey protein",
+    porcaoDescricao: "30g (1 dose)",
+    porPorcao: { calorias: 121, proteina: 21, carboidratos: 4, gordura: 2.6, sodio: 51 },
+    fonte: "rotulo_oficial",
+  },
+  {
+    id: "whey-nutrigood-milkshake-chocolate",
+    nome: "Whey Nutrigood Milkshake Chocolate",
+    categoria: "Whey protein",
+    porcaoDescricao: "30g (1 dose)",
+    porPorcao: { proteina: 21 },
+    fonte: "estimativa_padrao",
+    observacao: "Só a proteína (21g) é confirmada publicamente. kcal/carbo/gordura: checar o rótulo físico.",
+  },
+
+  // Pães
+  {
+    id: "pao-forma-seven-boys",
+    nome: "Pão de forma (Seven Boys tradicional)",
+    categoria: "Pães",
+    porcaoDescricao: "50g (2½ fatias)",
+    porPorcao: { calorias: 126, carboidratos: 25, proteina: 4.5, gordura: 0.9, fibra: 1.2 },
+    fonte: "rotulo_oficial",
+  },
+  {
+    id: "pao-forma-integral-wickbold",
+    nome: "Pão de Forma Integral Wickbold",
+    categoria: "Pães",
+    porcaoDescricao: "50g",
+    porPorcao: { calorias: 122, carboidratos: 20, proteina: 6.3, gordura: 1.7, fibra: 3.5 },
+    fonte: "rotulo_oficial",
+    observacao: "Linhas 'Wickbold 100% Nutrição'/'5 Zeros' variam ~109-114kcal/50g — ajuste se for uma dessas linhas.",
+  },
+  {
+    id: "pao-de-queijo",
+    nome: "Pão de queijo",
+    categoria: "Pães",
+    porcaoDescricao: "1 unidade (~30g)",
+    porPorcao: { calorias: 100, carboidratos: 10, proteina: 2.2, gordura: 5.5, sodio: 150 },
+    fonte: "estimativa_padrao",
+  },
+  {
+    id: "tortilla-fit-rap10",
+    nome: "Tortilla Fit Rap10",
+    categoria: "Pães",
+    porcaoDescricao: "1 unidade (~45g)",
+    porPorcao: { calorias: 100, carboidratos: 15, proteina: 4, gordura: 2, fibra: 6, sodio: 180 },
+    fonte: "estimativa_padrao",
+  },
+
+  // Leite e laticínios
+  {
+    id: "leite-integral-itambe",
+    nome: "Leite Integral Itambé",
+    categoria: "Laticínios",
+    porcaoDescricao: "200ml",
+    porPorcao: { calorias: 123, carboidratos: 9, proteina: 6, gordura: 6.5, sodio: 82 },
+    fonte: "estimativa_agregador",
+    observacao: "Rótulo oficial só em imagem — valores combinam agregadores + padrão de leite integral brasileiro.",
+  },
+  {
+    id: "queijo-mucarela",
+    nome: "Queijo muçarela",
+    categoria: "Laticínios",
+    porcaoDescricao: "30g (~2 fatias)",
+    porPorcao: { calorias: 99, proteina: 6.6, gordura: 7.5, sodio: 190 },
+    fonte: "taco",
+  },
+  {
+    id: "iogurte-batavo-probio2-ameixa",
+    nome: "Iogurte Batavo Probio2 Ameixa",
+    categoria: "Laticínios",
+    porcaoDescricao: "170g (pacote)",
+    porPorcao: { calorias: 122, carboidratos: 22, proteina: 4.1, sodio: 68 },
+    fonte: "estimativa_agregador",
+  },
+
+  // Enlatados Gomes da Costa
+  {
+    id: "atum-solido-natural",
+    nome: "Atum Ralado Natural (água) Gomes da Costa",
+    categoria: "Enlatados",
+    porcaoDescricao: "56g",
+    porPorcao: { calorias: 68, proteina: 15, gordura: 0.7, sodio: 159 },
+    fonte: "rotulo_oficial",
+  },
+  {
+    id: "atum-solido-natural-agua",
+    nome: "Atum Sólido Natural (água) Gomes da Costa",
+    categoria: "Enlatados",
+    porcaoDescricao: "56g",
+    porPorcao: { calorias: 68, proteina: 15, gordura: 0.7, sodio: 159 },
+    fonte: "rotulo_oficial",
+  },
+  {
+    id: "atum-em-pedacos-em-oleo",
+    nome: "Atum em Pedaços em Óleo",
+    categoria: "Enlatados",
+    porcaoDescricao: "100g",
+    porPorcao: { calorias: 105, proteina: 15, gordura: 5.1 },
+    fonte: "rotulo_oficial",
+  },
+  {
+    id: "atum-ralado-oleo-gomes-da-costa",
+    nome: "Atum Ralado em Óleo Gomes da Costa",
+    categoria: "Enlatados",
+    porcaoDescricao: "100g",
+    porPorcao: { calorias: 105, proteina: 15, gordura: 5 },
+    fonte: "estimativa_agregador",
+    observacao: "Tabela numérica só em imagem — usado o perfil da versão 'sólido em óleo' (mesma base atum+óleo).",
+  },
+  {
+    id: "atum-em-oleo-defumado",
+    nome: "Atum em Óleo Defumado",
+    categoria: "Enlatados",
+    porcaoDescricao: "120g",
+    porPorcao: { calorias: 172, proteina: 32, gordura: 4.8, sodio: 712 },
+    fonte: "estimativa_agregador",
+  },
+  {
+    id: "sardinha-molho-tomate-picante",
+    nome: "Sardinha molho de tomate picante",
+    categoria: "Enlatados",
+    porcaoDescricao: "60g",
+    porPorcao: { calorias: 83, proteina: 10, gordura: 4.7, sodio: 353 },
+    fonte: "estimativa_agregador",
+  },
+
+  // Frios / outros industrializados
+  {
+    id: "pate-peito-peru-seara",
+    nome: "Patê de Peito de Peru Seara (potinho)",
+    categoria: "Frios",
+    porcaoDescricao: "25g (sachê)",
+    porPorcao: { calorias: 50, proteina: 2.8, gordura: 3.8, sodio: 220 },
+    fonte: "estimativa_padrao",
+  },
+  {
+    id: "pate-presunto-seara",
+    nome: "Patê de Presunto Seara",
+    categoria: "Frios",
+    porcaoDescricao: "25g (sachê)",
+    porPorcao: { calorias: 57.5, proteina: 2.5, gordura: 4.75, sodio: 230 },
+    fonte: "rotulo_oficial",
+  },
+  {
+    id: "cafe-tres-coracoes-dark-roast",
+    nome: "Café Três Corações Premium Dark Roast (coado, sem açúcar)",
+    categoria: "Bebidas",
+    porcaoDescricao: "1 xícara (~50ml)",
+    porPorcao: { calorias: 2 },
+    fonte: "estimativa_padrao",
+    observacao: "Pó torrado e moído é 'não significativo' pela ANVISA — valor é da bebida coada, desprezível.",
+  },
+  {
+    id: "coca-cola",
+    nome: "Coca-Cola",
+    categoria: "Bebidas",
+    porcaoDescricao: "350ml (lata)",
+    porPorcao: { calorias: 140, carboidratos: 39, acucar: 39, sodio: 15 },
+    fonte: "estimativa_padrao",
+  },
+
+  // Energéticos Monster
+  {
+    id: "monster-original",
+    nome: "Monster Original",
+    categoria: "Energéticos",
+    porcaoDescricao: "473ml (lata)",
+    porPorcao: { calorias: 210, acucar: 54, carboidratos: 54, sodio: 370 },
+    fonte: "rotulo_oficial",
+  },
+  {
+    id: "monster-mango-loco",
+    nome: "Monster Mango Loco",
+    categoria: "Energéticos",
+    porcaoDescricao: "473ml (lata)",
+    porPorcao: { calorias: 246, sodio: 370 },
+    fonte: "estimativa_agregador",
+  },
+  {
+    id: "monster-original-zero",
+    nome: "Monster Original Zero",
+    categoria: "Energéticos",
+    porcaoDescricao: "473ml (lata)",
+    porPorcao: { calorias: 10, acucar: 0, sodio: 370 },
+    fonte: "estimativa_padrao",
+  },
+  {
+    id: "monster-pacific-punch",
+    nome: "Monster Pacific Punch",
+    categoria: "Energéticos",
+    porcaoDescricao: "473ml (lata)",
+    porPorcao: { calorias: 230, acucar: 58, sodio: 370 },
+    fonte: "estimativa_padrao",
+  },
+  {
+    id: "monster-ultra-branco",
+    nome: "Monster Ultra Branco",
+    categoria: "Energéticos",
+    porcaoDescricao: "473ml (lata)",
+    porPorcao: { calorias: 10, acucar: 0, sodio: 370 },
+    fonte: "estimativa_padrao",
+  },
+  {
+    id: "monster-ultra-watermelon-zero",
+    nome: "Monster Ultra Watermelon Zero",
+    categoria: "Energéticos",
+    porcaoDescricao: "473ml (lata)",
+    porPorcao: { calorias: 10, acucar: 0, sodio: 370 },
+    fonte: "estimativa_padrao",
+  },
+  {
+    id: "monster-watermelon",
+    nome: "Monster Watermelon",
+    categoria: "Energéticos",
+    porcaoDescricao: "473ml (lata)",
+    porPorcao: { calorias: 230, acucar: 58, sodio: 370 },
+    fonte: "estimativa_padrao",
+  },
+
+  // Carnes / ovos
+  {
+    id: "sobrecoxa-frango-grelhado",
+    nome: "Frango sobrecoxa grelhado",
+    categoria: "Carnes",
+    porcaoDescricao: "100g (pós-cocção)",
+    porPorcao: { calorias: 209, proteina: 26, gordura: 11, sodio: 90 },
+    fonte: "estimativa_padrao",
+  },
+  {
+    id: "asinhas-temperadas",
+    nome: "Asinhas temperadas",
+    categoria: "Carnes",
+    porcaoDescricao: "100g",
+    porPorcao: { calorias: 149, carboidratos: 0.4, proteina: 15, gordura: 9.6, sodio: 597 },
+    fonte: "estimativa_agregador",
+    observacao: "Referência: Coxinha da Asa Suculentíssimo Temperada Seara — marca não informada pelo usuário.",
+  },
+  {
+    id: "contrafile-grelhado",
+    nome: "Contrafilé grelhado",
+    categoria: "Carnes",
+    porcaoDescricao: "100g (pós-cocção)",
+    porPorcao: { calorias: 250, proteina: 28, gordura: 15 },
+    fonte: "taco",
+  },
+  {
+    id: "bife-patinho-grelhado",
+    nome: "Bife de Patinho grelhado",
+    categoria: "Carnes",
+    porcaoDescricao: "100g (pós-cocção)",
+    porPorcao: { calorias: 219, proteina: 35.9, gordura: 7.3 },
+    fonte: "taco",
+  },
+  {
+    id: "salmao-grelhado",
+    nome: "Salmão grelhado",
+    categoria: "Carnes",
+    porcaoDescricao: "100g (pós-cocção)",
+    porPorcao: { calorias: 208, proteina: 20, gordura: 13, omega3: 1.8 },
+    fonte: "estimativa_padrao",
+  },
+  {
+    id: "ovo-cozido",
+    nome: "Ovo cozido",
+    categoria: "Carnes",
+    porcaoDescricao: "1 unidade (~50g)",
+    porPorcao: { calorias: 78, proteina: 6.3, gordura: 5.3, vitaminaD: 1.1, vitaminaB12: 0.6 },
+    fonte: "taco",
+  },
+
+  // Hortifrúti
+  {
+    id: "tomate",
+    nome: "Tomate",
+    categoria: "Hortifrúti",
+    porcaoDescricao: "100g",
+    porPorcao: { calorias: 15, vitaminaC: 13 },
+    fonte: "taco",
+  },
+  {
+    id: "couve-manteiga",
+    nome: "Couve-manteiga crua",
+    categoria: "Hortifrúti",
+    porcaoDescricao: "100g",
+    porPorcao: { calorias: 25, ferro: 2.7, vitaminaC: 76 },
+    fonte: "estimativa_agregador",
+  },
+  {
+    id: "banana",
+    nome: "Banana",
+    categoria: "Hortifrúti",
+    porcaoDescricao: "100g (~1 unidade média)",
+    porPorcao: { calorias: 98, carboidratos: 26, fibra: 2 },
+    fonte: "taco",
+  },
+  {
+    id: "mixirica",
+    nome: "Mixirica (tangerina)",
+    categoria: "Hortifrúti",
+    porcaoDescricao: "100g (~1 unidade)",
+    porPorcao: { calorias: 53, carboidratos: 13, fibra: 1.8, vitaminaC: 27 },
+    fonte: "taco",
+  },
+  {
+    id: "limao",
+    nome: "Limão",
+    categoria: "Hortifrúti",
+    porcaoDescricao: "100g",
+    porPorcao: { calorias: 30, vitaminaC: 35 },
+    fonte: "estimativa_agregador",
+  },
+];
+
+export const INGREDIENT_CATEGORIES = Array.from(new Set(INGREDIENTS.map((i) => i.categoria)));
+
+export function getAllIngredients(custom: IngredientNutrition[]): IngredientNutrition[] {
+  return [...INGREDIENTS, ...custom];
+}
+
+export function getAllCategories(custom: IngredientNutrition[]): string[] {
+  return Array.from(new Set(getAllIngredients(custom).map((i) => i.categoria)));
+}
