@@ -3,15 +3,16 @@ import { useDayData } from "../hooks/useDayData";
 import { getAllSupplements } from "../data/supplements";
 import { getAllCategories, getAllIngredients } from "../data/ingredients";
 import { NUTRIENT_META, NUTRIENT_ORDER } from "../data/nutrientGoals";
-import type { FoodLogItem, NutrientKey } from "../types";
+import type { FoodLogItem, IngredientNutrition, NutrientKey } from "../types";
 import { computeCalorieBalance, computeDayNutrientTotals } from "../utils/analysis";
 import { useConfig } from "../hooks/useConfig";
+import { searchFoodNutrition } from "../utils/foodLookup";
 
 const REFEICOES: FoodLogItem["refeicao"][] = ["Café da manhã", "Almoço", "Lanche", "Jantar", "Ceia", "Outro"];
 
 export default function AlimentacaoTab({ date }: { date: string }) {
   const { day, update } = useDayData(date);
-  const { config } = useConfig();
+  const { config, update: updateConfig } = useConfig();
   const [refeicaoSelecionada, setRefeicaoSelecionada] = useState<FoodLogItem["refeicao"]>("Almoço");
   const [catalogoId, setCatalogoId] = useState("");
   const [nome, setNome] = useState("");
@@ -20,6 +21,8 @@ export default function AlimentacaoTab({ date }: { date: string }) {
   const [proteina, setProteina] = useState("");
   const [medNome, setMedNome] = useState("");
   const [medDose, setMedDose] = useState("");
+  const [buscando, setBuscando] = useState(false);
+  const [buscaAviso, setBuscaAviso] = useState<string | null>(null);
 
   const totals = computeDayNutrientTotals(day);
   const calorieBalance = computeCalorieBalance(date, config);
@@ -55,24 +58,59 @@ export default function AlimentacaoTab({ date }: { date: string }) {
     }));
   }
 
-  function addManualItem() {
-    if (!nome.trim()) return;
+  async function addManualItem() {
+    const nomeTrimmed = nome.trim();
+    if (!nomeTrimmed) return;
     const catalogIng = INGREDIENTS.find((i) => i.id === catalogoId);
-    const nutrientes = catalogIng
-      ? catalogIng.porPorcao
-      : { calorias: Number(kcal) || 0, proteina: Number(proteina) || 0 };
+
+    // Item do catálogo selecionado, ou kcal/proteína preenchidos à mão: usa como está, sem buscar.
+    if (catalogIng || kcal.trim() || proteina.trim()) {
+      const nutrientes = catalogIng
+        ? catalogIng.porPorcao
+        : { calorias: Number(kcal) || 0, proteina: Number(proteina) || 0 };
+      commitItem(nomeTrimmed, qtd.trim() || (catalogIng?.porcaoDescricao ?? ""), nutrientes, catalogIng?.id);
+      return;
+    }
+
+    // Nome novo, sem dados manuais: busca ativa da tabela nutricional completa.
+    setBuscando(true);
+    setBuscaAviso(null);
+    const resultado = await searchFoodNutrition(nomeTrimmed);
+    setBuscando(false);
+
+    if (!resultado) {
+      setBuscaAviso(
+        `Não encontrei tabela nutricional para "${nomeTrimmed}" (Open Food Facts). Adicionado sem nutrientes — edite kcal/proteína ao lado e adicione de novo, ou ajuste depois em Perfil/metas.`,
+      );
+      commitItem(nomeTrimmed, qtd.trim() || "1 porção", {}, undefined);
+      return;
+    }
+
+    const novoIngrediente: IngredientNutrition = {
+      id: `auto-${crypto.randomUUID()}`,
+      nome: resultado.nome,
+      categoria: "Descobertos automaticamente",
+      porcaoDescricao: resultado.porcaoDescricao,
+      porPorcao: resultado.porPorcao,
+      fonte: "estimativa_agregador",
+      observacao: "Adicionado por busca ativa (Open Food Facts) ao registrar este item.",
+    };
+    updateConfig((prev) => ({ ...prev, customIngredients: [...prev.customIngredients, novoIngrediente] }));
+    setBuscaAviso(`Tabela nutricional de "${resultado.nome}" encontrada e salva em Adicionar rápido.`);
+    commitItem(nomeTrimmed, qtd.trim() || resultado.porcaoDescricao, resultado.porPorcao, novoIngrediente.id);
+  }
+
+  function commitItem(
+    itemNome: string,
+    quantidade: string,
+    nutrientes: FoodLogItem["nutrientes"],
+    ingredienteId: string | undefined,
+  ) {
     update((prev) => ({
       ...prev,
       foodLog: [
         ...prev.foodLog,
-        {
-          id: crypto.randomUUID(),
-          refeicao: refeicaoSelecionada,
-          nome: nome.trim(),
-          quantidade: qtd.trim() || (catalogIng?.porcaoDescricao ?? ""),
-          nutrientes,
-          ingredienteId: catalogIng?.id,
-        },
+        { id: crypto.randomUUID(), refeicao: refeicaoSelecionada, nome: itemNome, quantidade, nutrientes, ingredienteId },
       ],
     }));
     setNome("");
@@ -196,10 +234,15 @@ export default function AlimentacaoTab({ date }: { date: string }) {
           <input type="text" placeholder="Qtd (ex: 2 unid)" value={qtd} onChange={(e) => setQtd(e.target.value)} style={{ flex: 1, minWidth: 100 }} />
           <input type="number" placeholder="kcal" value={kcal} onChange={(e) => setKcal(e.target.value)} disabled={!!catalogoId} style={{ width: 90 }} />
           <input type="number" placeholder="Proteína g" value={proteina} onChange={(e) => setProteina(e.target.value)} disabled={!!catalogoId} style={{ width: 100 }} />
-          <button className="btn btn-primary" onClick={addManualItem}>
-            Adicionar
+          <button className="btn btn-primary" onClick={addManualItem} disabled={buscando}>
+            {buscando ? "Buscando..." : "Adicionar"}
           </button>
         </div>
+        <p className="muted" style={{ marginTop: 6 }}>
+          Nome novo sem kcal/proteína preenchidos = busca ativa automática da tabela nutricional (Open Food Facts) ao
+          adicionar, e o item fica salvo em "Adicionar rápido" pra próxima vez.
+        </p>
+        {buscaAviso && <p style={{ marginTop: 4 }}>{buscaAviso}</p>}
 
         {day.foodLog.length === 0 ? (
           <p className="muted" style={{ marginTop: 12 }}>
