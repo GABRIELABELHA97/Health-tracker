@@ -1,7 +1,7 @@
 import type { AppleWatchData, DayData, NutrientKey, NutrientTotals, TaskItem } from "../types";
 import { NUTRIENT_META, NUTRIENT_ORDER, computeCalorieMacroGoals, getWeeklyGoals } from "../data/nutrientGoals";
 import { NUTRIENT_INFO } from "../data/nutrientInfo";
-import { SUPPLEMENT_NUTRIENTS } from "../data/supplements";
+import { SUPPLEMENT_NUTRIENTS_PER_UNIT } from "../data/supplements";
 import { getStudyPlanForDate } from "../data/studyPlan";
 import type { AppConfig } from "./storage";
 import { getDayData, listAllDayKeys, sumNutrients } from "./storage";
@@ -11,7 +11,14 @@ import { judgeNutrient, judgmentRank, rankToJudgment, type Judgment } from "./ju
 export function computeDayNutrientTotals(day: DayData): Partial<NutrientTotals> {
   const foodTotals = sumNutrients(day.foodLog.map((f) => f.nutrientes));
   const supplementTotals = sumNutrients(
-    day.suplementosTomados.map((id) => (SUPPLEMENT_NUTRIENTS[id] ?? {}) as Partial<NutrientTotals>),
+    Object.entries(day.suplementosQuantidade).map(([id, qtd]) => {
+      const perUnit = (SUPPLEMENT_NUTRIENTS_PER_UNIT[id] ?? {}) as Partial<NutrientTotals>;
+      const scaled: Partial<NutrientTotals> = {};
+      for (const key of Object.keys(perUnit) as (keyof NutrientTotals)[]) {
+        scaled[key] = (perUnit[key] ?? 0) * (qtd ?? 0);
+      }
+      return scaled;
+    }),
   );
   return sumNutrients([foodTotals, supplementTotals, day.nutrientesManuais]);
 }
