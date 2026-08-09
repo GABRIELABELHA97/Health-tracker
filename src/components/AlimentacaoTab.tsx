@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useDayData } from "../hooks/useDayData";
-import { getAllSupplements } from "../data/supplements";
+import { getAllSupplements, SUPPLEMENT_NUTRIENTS_PER_UNIT } from "../data/supplements";
 import { getAllCategories, getAllIngredients } from "../data/ingredients";
 import { NUTRIENT_META, NUTRIENT_ORDER } from "../data/nutrientGoals";
 import type { FoodLogItem, IngredientNutrition, NutrientKey } from "../types";
@@ -30,13 +30,29 @@ export default function AlimentacaoTab({ date }: { date: string }) {
   const INGREDIENTS = useMemo(() => getAllIngredients(config.customIngredients), [config.customIngredients]);
   const INGREDIENT_CATEGORIES = useMemo(() => getAllCategories(config.customIngredients), [config.customIngredients]);
 
-  function toggleSupplement(id: string) {
-    update((prev) => ({
-      ...prev,
-      suplementosTomados: prev.suplementosTomados.includes(id)
-        ? prev.suplementosTomados.filter((s) => s !== id)
-        : [...prev.suplementosTomados, id],
-    }));
+  function setSupplementQty(id: string, value: string) {
+    const qtd = value === "" ? undefined : Math.max(0, Number(value));
+    update((prev) => {
+      const next = { ...prev.suplementosQuantidade };
+      if (qtd == null || Number.isNaN(qtd)) delete next[id];
+      else next[id] = qtd;
+      return { ...prev, suplementosQuantidade: next };
+    });
+  }
+
+  function doseCalculada(id: string, qtd: number | undefined): string {
+    if (!qtd) return "—";
+    const perUnit = SUPPLEMENT_NUTRIENTS_PER_UNIT[id] ?? {};
+    const partes = (Object.keys(perUnit) as NutrientKey[])
+      .map((key) => {
+        const total = (perUnit[key] ?? 0) * qtd;
+        if (total <= 0) return null;
+        const meta = NUTRIENT_META[key];
+        const digits = meta.unit === "mg" || meta.unit === "mcg" || meta.unit === "kcal" ? 1 : 2;
+        return `${meta.label} ${total.toFixed(digits)}${meta.unit}`;
+      })
+      .filter((s): s is string => s != null);
+    return partes.length > 0 ? partes.join(", ") : "sem nutriente rastreado";
   }
 
   function addFromCatalog(id: string) {
@@ -162,22 +178,52 @@ export default function AlimentacaoTab({ date }: { date: string }) {
     <>
       <div className="card">
         <h2>Suplementos de hoje</h2>
-        <p className="muted">Um clique registra a dose padrão de cada um (sempre a mesma, todo dia).</p>
-        <div className="chip-grid" style={{ marginTop: 10 }}>
-          {SUPPLEMENTS.map((s) => {
-            const taken = day.suplementosTomados.includes(s.id);
-            return (
-              <button
-                key={s.id}
-                className={`chip ${taken ? "taken" : ""}`}
-                title={s.doseDescricao}
-                onClick={() => toggleSupplement(s.id)}
-              >
-                {taken ? "✓ " : ""}
-                {s.nome} — {s.doseDescricao}
-              </button>
-            );
-          })}
+        <p className="muted">
+          Escreva quanto tomou de cada um — a dose e os nutrientes aportados são calculados automaticamente e somados
+          ao painel de Nutrientes.
+        </p>
+        <div className="table-scroll" style={{ marginTop: 10 }}>
+          <table>
+            <thead>
+              <tr>
+                <th>Suplemento</th>
+                <th>Referência</th>
+                <th>Quantidade tomada</th>
+                <th>Dose calculada</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SUPPLEMENTS.map((s) => {
+                const qtd = day.suplementosQuantidade[s.id];
+                return (
+                  <tr key={s.id}>
+                    <td>
+                      {s.nome}
+                      {s.observacao && (
+                        <div className="muted" style={{ fontSize: "0.78rem" }}>
+                          {s.observacao}
+                        </div>
+                      )}
+                    </td>
+                    <td className="muted">{s.doseReferencia}</td>
+                    <td>
+                      <input
+                        type="number"
+                        min={0}
+                        step="any"
+                        placeholder="0"
+                        value={qtd ?? ""}
+                        onChange={(e) => setSupplementQty(s.id, e.target.value)}
+                        style={{ width: 80 }}
+                      />{" "}
+                      <span className="muted">{s.unidade}</span>
+                    </td>
+                    <td className="muted">{doseCalculada(s.id, qtd)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 

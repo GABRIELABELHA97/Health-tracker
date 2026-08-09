@@ -48,7 +48,10 @@ export interface IngredientNutrition {
 export interface Supplement {
   id: string;
   nome: string;
-  doseDescricao: string;
+  /** Unidade em que a quantidade tomada é registrada (ex: "gotas", "comprimidos", "cápsulas"). */
+  unidade: string;
+  /** Referência de dose habitual, só como texto informativo (não é mais aplicada automaticamente). */
+  doseReferencia: string;
   horario?: string;
   observacao?: string;
 }
@@ -108,7 +111,7 @@ export interface StudyLogItem {
 export interface DayData {
   date: string; // YYYY-MM-DD
   tasks: TaskItem[];
-  suplementosTomados: string[]; // ids de Supplement confirmados no dia
+  suplementosQuantidade: Partial<Record<string, number>>; // id de Supplement -> quantidade de unidades tomadas no dia
   foodLog: FoodLogItem[];
   nutrientesManuais: Partial<NutrientTotals>; // preenchimento manual por nutriente em "o que você comeu hoje"
   medications: MedicationLogItem[];
@@ -124,7 +127,7 @@ export function emptyDayData(date: string): DayData {
   return {
     date,
     tasks: [],
-    suplementosTomados: [],
+    suplementosQuantidade: {},
     foodLog: [],
     nutrientesManuais: {},
     medications: [],

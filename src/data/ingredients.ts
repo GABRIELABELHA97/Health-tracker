@@ -68,9 +68,9 @@ export const INGREDIENTS: IngredientNutrition[] = [
   },
   {
     id: "tres-coracoes-power-whey",
-    nome: "Três Corações Power Whey (Cappuccino Clássico)",
+    nome: "Bebida Láctea Cappuccino Power Whey (Três Corações)",
     categoria: "Bebidas proteicas",
-    porcaoDescricao: "250ml",
+    porcaoDescricao: "260ml",
     porPorcao: { calorias: 160, carboidratos: 19, proteina: 15, gordura: 2.8, sodio: 472 },
     fonte: "rotulo_oficial",
   },
@@ -401,6 +401,62 @@ export const INGREDIENTS: IngredientNutrition[] = [
     categoria: "Hortifrúti",
     porcaoDescricao: "100g (~2 unidades)",
     porPorcao: { calorias: 29, carboidratos: 9, proteina: 0.7, gordura: 0.2, fibra: 2.8, vitaminaC: 35, sodio: 2 },
+    fonte: "estimativa_agregador",
+  },
+
+  // Suplementos alimentares (Emana)
+  {
+    id: "creatina-emana",
+    nome: "Creatina Monohidratada (Emana)",
+    categoria: "Suplementos",
+    porcaoDescricao: "1 dose (~3g)",
+    porPorcao: { calorias: 0, carboidratos: 0, proteina: 0, gordura: 0 },
+    fonte: "estimativa_padrao",
+    observacao:
+      "Creatina monohidratada pura é nutricionalmente inerte nos nutrientes rastreados por este app (sem kcal/macros/vitaminas) — o próprio composto 'creatina' não é uma das 20 colunas da aba Nutrientes.",
+  },
+  {
+    id: "shake-proteico-emana",
+    nome: "Shake Proteico (Emana, 23g proteína)",
+    categoria: "Bebidas proteicas",
+    porcaoDescricao: "1 sachê (pó, preparado em água)",
+    porPorcao: { calorias: 110, carboidratos: 5, proteina: 23, gordura: 1.5, fibra: 2, sodio: 180 },
+    fonte: "estimativa_padrao",
+    observacao: "Proteína vegetal (ervilha) confirmada em 23g; kcal/carbo/gordura/sódio não achei publicados em texto — estimados por similaridade com shakes veganos de perfil parecido. Confirme no rótulo.",
+  },
+
+  // Laticínios e industrializados
+  {
+    id: "queijo-minas-frescal",
+    nome: "Queijo Minas Frescal",
+    categoria: "Laticínios",
+    porcaoDescricao: "100g",
+    porPorcao: { calorias: 264, carboidratos: 3.2, proteina: 17.4, gordura: 20.2 },
+    fonte: "taco",
+  },
+  {
+    id: "iogurte-liquido-ameixa-activia",
+    nome: "Iogurte líquido de ameixa (Activia)",
+    categoria: "Laticínios",
+    porcaoDescricao: "170g (garrafa)",
+    porPorcao: { calorias: 129, carboidratos: 24, proteina: 3.9, gordura: 1.9 },
+    fonte: "estimativa_agregador",
+    observacao: "Rótulo oficial não encontrado em texto — valor escalado de 100g→170g a partir de agregador nutricional. Confirme sódio/açúcares no rótulo.",
+  },
+  {
+    id: "chocolate-bis",
+    nome: "Chocolate Bis (Lacta)",
+    categoria: "Doces e snacks",
+    porcaoDescricao: "1 unidade (6,3g)",
+    porPorcao: { calorias: 31, carboidratos: 4, acucar: 2.9, proteina: 0, gordura: 1.5, fibra: 0, sodio: 14 },
+    fonte: "estimativa_agregador",
+  },
+  {
+    id: "biscoito-trakinas-chocolate",
+    nome: "Biscoito recheado Trakinas chocolate",
+    categoria: "Doces e snacks",
+    porcaoDescricao: "30g (3 biscoitos)",
+    porPorcao: { calorias: 143, carboidratos: 22, acucar: 9.2, proteina: 1.6, gordura: 5.4, fibra: 0, sodio: 78 },
     fonte: "estimativa_agregador",
   },
 ];

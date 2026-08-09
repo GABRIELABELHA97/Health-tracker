@@ -10,7 +10,7 @@ export default function PerfilMetas({ onClose }: { onClose: () => void }) {
 
   const [objetivosText, setObjetivosText] = useState(config.objetivos.join(", "));
   const [newIng, setNewIng] = useState({ nome: "", categoria: "", porcao: "", calorias: "", proteina: "" });
-  const [newSup, setNewSup] = useState({ nome: "", dose: "" });
+  const [newSup, setNewSup] = useState({ nome: "", unidade: "doses", referencia: "" });
 
   function setProfileField<K extends keyof Profile>(key: K, value: Profile[K]) {
     update((prev) => ({ ...prev, profile: { ...prev.profile, [key]: value } }));
@@ -50,9 +50,14 @@ export default function PerfilMetas({ onClose }: { onClose: () => void }) {
 
   function addCustomSupplement() {
     if (!newSup.nome.trim()) return;
-    const sup: Supplement = { id: `custom-${crypto.randomUUID()}`, nome: newSup.nome.trim(), doseDescricao: newSup.dose.trim() || "1 dose" };
+    const sup: Supplement = {
+      id: `custom-${crypto.randomUUID()}`,
+      nome: newSup.nome.trim(),
+      unidade: newSup.unidade.trim() || "doses",
+      doseReferencia: newSup.referencia.trim() || "—",
+    };
     update((prev) => ({ ...prev, customSupplements: [...prev.customSupplements, sup] }));
-    setNewSup({ nome: "", dose: "" });
+    setNewSup({ nome: "", unidade: "doses", referencia: "" });
   }
 
   function removeCustomSupplement(id: string) {
@@ -184,15 +189,20 @@ export default function PerfilMetas({ onClose }: { onClose: () => void }) {
         <h2>Suplementos personalizados</h2>
         <div className="row" style={{ marginTop: 10 }}>
           <input type="text" placeholder="Nome" value={newSup.nome} onChange={(e) => setNewSup({ ...newSup, nome: e.target.value })} style={{ flex: 2, minWidth: 140 }} />
-          <input type="text" placeholder="Dose" value={newSup.dose} onChange={(e) => setNewSup({ ...newSup, dose: e.target.value })} style={{ flex: 1, minWidth: 100 }} />
+          <input type="text" placeholder="Unidade (gotas, cp...)" value={newSup.unidade} onChange={(e) => setNewSup({ ...newSup, unidade: e.target.value })} style={{ flex: 1, minWidth: 120 }} />
+          <input type="text" placeholder="Referência de dose" value={newSup.referencia} onChange={(e) => setNewSup({ ...newSup, referencia: e.target.value })} style={{ flex: 1, minWidth: 120 }} />
           <button className="btn btn-primary" onClick={addCustomSupplement}>
             Adicionar
           </button>
         </div>
+        <p className="muted" style={{ marginTop: 6 }}>
+          Suplementos personalizados ainda não têm nutrientes por unidade cadastrados (só contam nas doses, não no
+          painel de Nutrientes).
+        </p>
         {config.customSupplements.map((s) => (
           <div key={s.id} className="list-item">
             <span>
-              {s.nome} <span className="muted">({s.doseDescricao})</span>
+              {s.nome} <span className="muted">({s.doseReferencia}, em {s.unidade})</span>
             </span>
             <button className="btn btn-small" onClick={() => removeCustomSupplement(s.id)}>
               remover
