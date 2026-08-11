@@ -1,20 +1,23 @@
 import { useState } from "react";
 import { addDays, formatLongDate, toISODate } from "./utils/dates";
 import { listAllDayKeys } from "./utils/storage";
+import { getStorageWarning } from "./utils/storageSafe";
 import TarefasTab from "./components/TarefasTab";
 import AlimentacaoTab from "./components/AlimentacaoTab";
 import NutrientesTab from "./components/NutrientesTab";
 import DesmameTab from "./components/DesmameTab";
 import EstudosTab from "./components/EstudosTab";
 import ResumoTab from "./components/ResumoTab";
+import CardapiosTab from "./components/CardapiosTab";
 import PerfilMetas from "./components/PerfilMetas";
 
-type TabId = "tarefas" | "alimentacao" | "nutrientes" | "desmame" | "estudos" | "resumo";
+type TabId = "tarefas" | "alimentacao" | "nutrientes" | "desmame" | "estudos" | "resumo" | "cardapios";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "tarefas", label: "Tarefas" },
   { id: "alimentacao", label: "Alimentação" },
   { id: "nutrientes", label: "Nutrientes" },
+  { id: "cardapios", label: "Cardápios" },
   { id: "desmame", label: "Desmame" },
   { id: "estudos", label: "Estudos" },
   { id: "resumo", label: "Resumo" },
@@ -35,9 +38,25 @@ export default function App() {
     );
   }
 
+  const storageWarning = getStorageWarning();
+
   return (
     <>
       <h1>Acompanhamento diário</h1>
+
+      {storageWarning && (
+        <div style={{
+          background: "#fff3cd",
+          border: "1px solid #ffc107",
+          borderRadius: 4,
+          padding: 12,
+          marginBottom: 16,
+          color: "#856404",
+          fontSize: "0.9rem"
+        }}>
+          {storageWarning}
+        </div>
+      )}
 
       <div className="row" style={{ marginBottom: 16 }}>
         <button
@@ -95,6 +114,7 @@ export default function App() {
           {tab === "tarefas" && <TarefasTab date={date} />}
           {tab === "alimentacao" && <AlimentacaoTab date={date} />}
           {tab === "nutrientes" && <NutrientesTab date={date} />}
+          {tab === "cardapios" && <CardapiosTab />}
           {tab === "desmame" && <DesmameTab date={date} />}
           {tab === "estudos" && <EstudosTab date={date} />}
           {tab === "resumo" && <ResumoTab date={date} />}

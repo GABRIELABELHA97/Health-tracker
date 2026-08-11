@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDayData } from "../hooks/useDayData";
 import { getStudyPlanForDate } from "../data/studyPlan";
 import { judgeStudyDay } from "../utils/analysis";
@@ -11,6 +11,15 @@ export default function EstudosTab({ date }: { date: string }) {
 
   const plano = getStudyPlanForDate(date);
   const report = judgeStudyDay(date, day);
+
+  useEffect(() => {
+    if (plano && !day.objetivoEstudoDia) {
+      const temas = plano.itens.map((item) => item.tema).join(" · ");
+      const totalMin = plano.itens.reduce((sum, item) => sum + item.duracaoMin, 0);
+      const objetivo = `${temas} (~${totalMin}min)`;
+      update((prev) => ({ ...prev, objetivoEstudoDia: objetivo }));
+    }
+  }, [date, plano, day.objetivoEstudoDia, update]);
 
   function saveObjetivo(v: string) {
     update((prev) => ({ ...prev, objetivoEstudoDia: v }));
