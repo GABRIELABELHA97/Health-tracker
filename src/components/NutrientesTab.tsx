@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useConfig } from "../hooks/useConfig";
 import { buildNutrientRows, generateNutrientAnalysis, type NutrientAnalysisReport } from "../utils/analysis";
+import { getSuggestionsForNutrient } from "../data/nutrientSuggestions";
 import JudgmentBadge from "./JudgmentBadge";
 
 function fmt(n: number, unit: string) {
@@ -109,6 +110,57 @@ export default function NutrientesTab({ date }: { date: string }) {
 
           <div className="section-title">Análise franca e direta</div>
           <p className="analysis-text">{report.analiseFranca}</p>
+        </div>
+      )}
+
+      {rows.some((r) => r.consumidoDia < r.metaDia) && (
+        <div className="card">
+          <h2>💡 Dicas de alimentos para complementar</h2>
+          <p className="muted" style={{ marginBottom: 16 }}>
+            Abaixo estão sugestões de alimentos para atingir as metas dos nutrientes que ficaram abaixo do objetivo hoje:
+          </p>
+          {rows
+            .filter((r) => r.consumidoDia < r.metaDia)
+            .map((nutrient) => {
+              const suggestions = getSuggestionsForNutrient(nutrient.label);
+              return (
+                <div key={nutrient.key} style={{ marginBottom: 20, paddingBottom: 20, borderBottom: "1px solid #eee" }}>
+                  <h3 style={{ marginBottom: 10, color: "#2c3e50" }}>
+                    {nutrient.label}
+                  </h3>
+                  {suggestions.length > 0 ? (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
+                      {suggestions.map((sugg, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            padding: 12,
+                            backgroundColor: "#f5f7fa",
+                            borderRadius: 6,
+                            fontSize: "0.9rem",
+                          }}
+                        >
+                          <div style={{ fontWeight: "bold", marginBottom: 4 }}>{sugg.alimento}</div>
+                          <div style={{ color: "#666", fontSize: "0.85rem", marginBottom: 4 }}>
+                            {sugg.quantidade}
+                          </div>
+                          <div style={{ color: "#27ae60", fontSize: "0.85rem", fontWeight: "500" }}>
+                            {sugg.nutrientes.join(", ")}
+                          </div>
+                          {sugg.notas && (
+                            <div style={{ color: "#7f8c8d", fontSize: "0.8rem", fontStyle: "italic", marginTop: 6 }}>
+                              {sugg.notas}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="muted">Nenhuma sugestão disponível para este nutriente.</p>
+                  )}
+                </div>
+              );
+            })}
         </div>
       )}
     </>
