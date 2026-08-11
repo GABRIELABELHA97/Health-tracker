@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { useDayData } from "../hooks/useDayData";
 import { getStudyPlanForDate } from "../data/studyPlan";
 import { judgeStudyDay } from "../utils/analysis";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import JudgmentBadge from "./JudgmentBadge";
+import SaveStatusButton from "./SaveStatusButton";
 
 export default function EstudosTab({ date }: { date: string }) {
   const { day, update } = useDayData(date);
+  const { status, markSaving, markSaved } = useSaveStatus();
   const [oQueFoiEstudado, setOQueFoiEstudado] = useState("");
   const [como, setComo] = useState("");
 
@@ -22,21 +25,32 @@ export default function EstudosTab({ date }: { date: string }) {
   }, [date, plano, day.objetivoEstudoDia, update]);
 
   function saveObjetivo(v: string) {
+    markSaving();
     update((prev) => ({ ...prev, objetivoEstudoDia: v }));
+    setTimeout(() => markSaved(), 100);
   }
 
   function addStudy() {
     if (!oQueFoiEstudado.trim()) return;
+    markSaving();
     update((prev) => ({
       ...prev,
       studyLog: [...prev.studyLog, { id: crypto.randomUUID(), oQueFoiEstudado: oQueFoiEstudado.trim(), como: como.trim() || undefined }],
     }));
     setOQueFoiEstudado("");
     setComo("");
+    setTimeout(() => markSaved(), 100);
   }
 
   function removeStudy(id: string) {
+    markSaving();
     update((prev) => ({ ...prev, studyLog: prev.studyLog.filter((s) => s.id !== id) }));
+    setTimeout(() => markSaved(), 100);
+  }
+
+  function handleSave() {
+    markSaving();
+    setTimeout(() => markSaved(), 300);
   }
 
   return (
@@ -61,7 +75,10 @@ export default function EstudosTab({ date }: { date: string }) {
       </div>
 
       <div className="card">
-        <h2>O que pretendo estudar hoje</h2>
+        <div className="row-between">
+          <h2>O que pretendo estudar hoje</h2>
+          <SaveStatusButton status={status} onClick={handleSave} />
+        </div>
         <div className="row" style={{ marginTop: 10 }}>
           <input
             type="text"

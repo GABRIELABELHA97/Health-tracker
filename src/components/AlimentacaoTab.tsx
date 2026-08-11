@@ -6,13 +6,16 @@ import { NUTRIENT_META, NUTRIENT_ORDER } from "../data/nutrientGoals";
 import type { FoodLogItem, IngredientNutrition, NutrientKey } from "../types";
 import { computeCalorieBalance, computeDayNutrientTotals } from "../utils/analysis";
 import { useConfig } from "../hooks/useConfig";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import { searchFoodNutrition } from "../utils/foodLookup";
+import SaveStatusButton from "./SaveStatusButton";
 
 const REFEICOES: FoodLogItem["refeicao"][] = ["Café da manhã", "Almoço", "Lanche", "Jantar", "Ceia", "Outro"];
 
 export default function AlimentacaoTab({ date }: { date: string }) {
   const { day, update } = useDayData(date);
   const { config, update: updateConfig } = useConfig();
+  const { status, markSaving, markSaved } = useSaveStatus();
   const [refeicaoSelecionada, setRefeicaoSelecionada] = useState<FoodLogItem["refeicao"]>("Almoço");
   const [catalogoId, setCatalogoId] = useState("");
   const [nome, setNome] = useState("");
@@ -31,6 +34,7 @@ export default function AlimentacaoTab({ date }: { date: string }) {
   const INGREDIENT_CATEGORIES = useMemo(() => getAllCategories(config.customIngredients), [config.customIngredients]);
 
   function setSupplementQty(id: string, value: string) {
+    markSaving();
     const qtd = value === "" ? undefined : Math.max(0, Number(value));
     update((prev) => {
       const next = { ...prev.suplementosQuantidade };
@@ -38,6 +42,12 @@ export default function AlimentacaoTab({ date }: { date: string }) {
       else next[id] = qtd;
       return { ...prev, suplementosQuantidade: next };
     });
+    setTimeout(() => markSaved(), 100);
+  }
+
+  function handleSave() {
+    markSaving();
+    setTimeout(() => markSaved(), 300);
   }
 
   function doseCalculada(id: string, qtd: number | undefined): string {
@@ -56,6 +66,7 @@ export default function AlimentacaoTab({ date }: { date: string }) {
   }
 
   function addFromCatalog(id: string) {
+    markSaving();
     const ing = INGREDIENTS.find((i) => i.id === id);
     if (!ing) return;
     update((prev) => ({
@@ -72,6 +83,7 @@ export default function AlimentacaoTab({ date }: { date: string }) {
         },
       ],
     }));
+    setTimeout(() => markSaved(), 100);
   }
 
   async function addManualItem() {
@@ -122,6 +134,7 @@ export default function AlimentacaoTab({ date }: { date: string }) {
     nutrientes: FoodLogItem["nutrientes"],
     ingredienteId: string | undefined,
   ) {
+    markSaving();
     update((prev) => ({
       ...prev,
       foodLog: [
@@ -134,24 +147,31 @@ export default function AlimentacaoTab({ date }: { date: string }) {
     setKcal("");
     setProteina("");
     setCatalogoId("");
+    setTimeout(() => markSaved(), 100);
   }
 
   function removeFoodItem(id: string) {
+    markSaving();
     update((prev) => ({ ...prev, foodLog: prev.foodLog.filter((f) => f.id !== id) }));
+    setTimeout(() => markSaved(), 100);
   }
 
   function addMedication() {
     if (!medNome.trim()) return;
+    markSaving();
     update((prev) => ({
       ...prev,
       medications: [...prev.medications, { id: crypto.randomUUID(), nome: medNome.trim(), dose: medDose.trim() || undefined }],
     }));
     setMedNome("");
     setMedDose("");
+    setTimeout(() => markSaved(), 100);
   }
 
   function removeMedication(id: string) {
+    markSaving();
     update((prev) => ({ ...prev, medications: prev.medications.filter((m) => m.id !== id) }));
+    setTimeout(() => markSaved(), 100);
   }
 
   function setAppleWatchField(field: keyof typeof day.appleWatch, value: string) {
@@ -177,7 +197,10 @@ export default function AlimentacaoTab({ date }: { date: string }) {
   return (
     <>
       <div className="card">
-        <h2>Suplementos de hoje</h2>
+        <div className="row-between">
+          <h2>Suplementos de hoje</h2>
+          <SaveStatusButton status={status} onClick={handleSave} />
+        </div>
         <p className="muted">
           Escreva quanto tomou de cada um — a dose e os nutrientes aportados são calculados automaticamente e somados
           ao painel de Nutrientes.

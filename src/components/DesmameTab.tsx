@@ -2,24 +2,36 @@ import { useDayData } from "../hooks/useDayData";
 import { useConfig } from "../hooks/useConfig";
 import { computeDesmamePhase, getDesmameHistory } from "../utils/desmame";
 import { formatLongDate } from "../utils/dates";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import NormalizedLineChart from "./NormalizedLineChart";
+import SaveStatusButton from "./SaveStatusButton";
 
 export default function DesmameTab({ date }: { date: string }) {
   const { day, update } = useDayData(date);
   const { config, update: updateConfig } = useConfig();
+  const { status, markSaving, markSaved } = useSaveStatus();
 
   const phase = computeDesmamePhase(date, config.desmame);
   const history = getDesmameHistory();
 
   function setField(field: "rivotrilGotas" | "cbdGotas" | "melatoninaGotas", value: string) {
+    markSaving();
     update((prev) => ({
       ...prev,
       desmame: { ...prev.desmame, [field]: value === "" ? undefined : Number(value) },
     }));
+    setTimeout(() => markSaved(), 100);
   }
 
   function setComoMeSenti(value: string) {
+    markSaving();
     update((prev) => ({ ...prev, desmame: { ...prev.desmame, comoMeSenti: value } }));
+    setTimeout(() => markSaved(), 100);
+  }
+
+  function handleSave() {
+    markSaving();
+    setTimeout(() => markSaved(), 300);
   }
 
   return (
@@ -56,7 +68,10 @@ export default function DesmameTab({ date }: { date: string }) {
       </div>
 
       <div className="card">
-        <h2>Registro de hoje</h2>
+        <div className="row-between">
+          <h2>Registro de hoje</h2>
+          <SaveStatusButton status={status} onClick={handleSave} />
+        </div>
         <div className="field-grid" style={{ marginTop: 10 }}>
           <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <span className="muted">Rivotril (gotas)</span>

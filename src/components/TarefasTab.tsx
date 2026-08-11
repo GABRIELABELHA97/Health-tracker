@@ -2,26 +2,38 @@ import { useState } from "react";
 import { useDayData } from "../hooks/useDayData";
 import { useConfig } from "../hooks/useConfig";
 import { judgeTasks } from "../utils/analysis";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import JudgmentBadge from "./JudgmentBadge";
+import SaveStatusButton from "./SaveStatusButton";
 
 export default function TarefasTab({ date }: { date: string }) {
   const { day, update } = useDayData(date);
   const { config } = useConfig();
+  const { status, markSaving, markSaved } = useSaveStatus();
   const [oQueFoiFeito, setOQueFoiFeito] = useState("");
   const [como, setComo] = useState("");
 
   function addTask() {
     if (!oQueFoiFeito.trim()) return;
+    markSaving();
     update((prev) => ({
       ...prev,
       tasks: [...prev.tasks, { id: crypto.randomUUID(), oQueFoiFeito: oQueFoiFeito.trim(), como: como.trim() || undefined }],
     }));
     setOQueFoiFeito("");
     setComo("");
+    setTimeout(() => markSaved(), 100);
   }
 
   function removeTask(id: string) {
+    markSaving();
     update((prev) => ({ ...prev, tasks: prev.tasks.filter((t) => t.id !== id) }));
+    setTimeout(() => markSaved(), 100);
+  }
+
+  function handleSave() {
+    markSaving();
+    setTimeout(() => markSaved(), 300);
   }
 
   const report = judgeTasks(day.tasks, config.objetivos);
@@ -29,7 +41,10 @@ export default function TarefasTab({ date }: { date: string }) {
   return (
     <>
       <div className="card">
-        <h2>O que você fez hoje</h2>
+        <div className="row-between">
+          <h2>O que você fez hoje</h2>
+          <SaveStatusButton status={status} onClick={handleSave} />
+        </div>
         <div className="row" style={{ marginTop: 10 }}>
           <input
             type="text"
