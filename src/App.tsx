@@ -8,16 +8,16 @@ import NutrientesTab from "./components/NutrientesTab";
 import DesmameTab from "./components/DesmameTab";
 import EstudosTab from "./components/EstudosTab";
 import ResumoTab from "./components/ResumoTab";
-import CardapiosTab from "./components/CardapiosTab";
+import PlanejadorCardapioTab from "./components/PlanejadorCardapioTab";
 import PerfilMetas from "./components/PerfilMetas";
 
-type TabId = "tarefas" | "alimentacao" | "nutrientes" | "desmame" | "estudos" | "resumo" | "cardapios";
+type TabId = "tarefas" | "alimentacao" | "nutrientes" | "planejador" | "desmame" | "estudos" | "resumo";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "tarefas", label: "Tarefas" },
   { id: "alimentacao", label: "Alimentação" },
   { id: "nutrientes", label: "Nutrientes" },
-  { id: "cardapios", label: "Cardápios" },
+  { id: "planejador", label: "Planejador" },
   { id: "desmame", label: "Desmame" },
   { id: "estudos", label: "Estudos" },
   { id: "resumo", label: "Resumo" },
@@ -114,7 +114,7 @@ export default function App() {
           {tab === "tarefas" && <TarefasTab date={date} />}
           {tab === "alimentacao" && <AlimentacaoTab date={date} />}
           {tab === "nutrientes" && <NutrientesTab date={date} />}
-          {tab === "cardapios" && <CardapiosTab />}
+          {tab === "planejador" && <PlanejadorCardapioTab date={date} />}
           {tab === "desmame" && <DesmameTab date={date} />}
           {tab === "estudos" && <EstudosTab date={date} />}
           {tab === "resumo" && <ResumoTab date={date} />}
