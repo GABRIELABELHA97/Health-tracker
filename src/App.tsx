@@ -8,14 +8,16 @@ import NutrientesTab from "./components/NutrientesTab";
 import DesmameTab from "./components/DesmameTab";
 import EstudosTab from "./components/EstudosTab";
 import ResumoTab from "./components/ResumoTab";
+import CardapiosTab from "./components/CardapiosTab";
 import PerfilMetas from "./components/PerfilMetas";
 
-type TabId = "tarefas" | "alimentacao" | "nutrientes" | "desmame" | "estudos" | "resumo";
+type TabId = "tarefas" | "alimentacao" | "nutrientes" | "desmame" | "estudos" | "resumo" | "cardapios";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "tarefas", label: "Tarefas" },
   { id: "alimentacao", label: "Alimentação" },
   { id: "nutrientes", label: "Nutrientes" },
+  { id: "cardapios", label: "Cardápios" },
   { id: "desmame", label: "Desmame" },
   { id: "estudos", label: "Estudos" },
   { id: "resumo", label: "Resumo" },
@@ -112,6 +114,7 @@ export default function App() {
           {tab === "tarefas" && <TarefasTab date={date} />}
           {tab === "alimentacao" && <AlimentacaoTab date={date} />}
           {tab === "nutrientes" && <NutrientesTab date={date} />}
+          {tab === "cardapios" && <CardapiosTab />}
           {tab === "desmame" && <DesmameTab date={date} />}
           {tab === "estudos" && <EstudosTab date={date} />}
           {tab === "resumo" && <ResumoTab date={date} />}
