@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { addDays, formatLongDate, toISODate } from "./utils/dates";
 import { listAllDayKeys } from "./utils/storage";
+import { getStorageWarning } from "./utils/storageSafe";
 import TarefasTab from "./components/TarefasTab";
 import AlimentacaoTab from "./components/AlimentacaoTab";
 import NutrientesTab from "./components/NutrientesTab";
@@ -35,9 +36,25 @@ export default function App() {
     );
   }
 
+  const storageWarning = getStorageWarning();
+
   return (
     <>
       <h1>Acompanhamento diário</h1>
+
+      {storageWarning && (
+        <div style={{
+          background: "#fff3cd",
+          border: "1px solid #ffc107",
+          borderRadius: 4,
+          padding: 12,
+          marginBottom: 16,
+          color: "#856404",
+          fontSize: "0.9rem"
+        }}>
+          {storageWarning}
+        </div>
+      )}
 
       <div className="row" style={{ marginBottom: 16 }}>
         <button

@@ -1,5 +1,6 @@
 import type { DayData, IngredientNutrition, NutrientKey, NutrientTotals, Supplement } from "../types";
 import { emptyDayData } from "../types";
+import { safeStorage } from "./storageSafe";
 
 const DAY_PREFIX = "ht:day:";
 const CONFIG_KEY = "ht:config";
@@ -65,7 +66,7 @@ function defaultConfig(): AppConfig {
 }
 
 export function getConfig(): AppConfig {
-  const raw = localStorage.getItem(CONFIG_KEY);
+  const raw = safeStorage.getItem(CONFIG_KEY);
   if (!raw) return defaultConfig();
   try {
     const parsed = JSON.parse(raw);
@@ -81,11 +82,11 @@ export function getConfig(): AppConfig {
 }
 
 export function saveConfig(config: AppConfig) {
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+  safeStorage.setItem(CONFIG_KEY, JSON.stringify(config));
 }
 
 export function getDayData(date: string): DayData {
-  const raw = localStorage.getItem(DAY_PREFIX + date);
+  const raw = safeStorage.getItem(DAY_PREFIX + date);
   if (!raw) return emptyDayData(date);
   try {
     const parsed = JSON.parse(raw);
@@ -96,13 +97,13 @@ export function getDayData(date: string): DayData {
 }
 
 export function saveDayData(data: DayData) {
-  localStorage.setItem(DAY_PREFIX + data.date, JSON.stringify(data));
+  safeStorage.setItem(DAY_PREFIX + data.date, JSON.stringify(data));
 }
 
 export function listAllDayKeys(): string[] {
   const out: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
+  for (let i = 0; i < safeStorage.length; i++) {
+    const key = safeStorage.key(i);
     if (key && key.startsWith(DAY_PREFIX)) out.push(key.slice(DAY_PREFIX.length));
   }
   return out.sort();
