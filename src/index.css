@@ -265,3 +265,23 @@ a, a:visited {
   font-size: 1.4rem;
   font-weight: 700;
 }
+
+.btn-success {
+  background: #27ae60;
+  color: white;
+  border-color: #27ae60;
+}
+
+.btn-success:hover {
+  background: #229954;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: white;
+  border-color: #e74c3c;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}

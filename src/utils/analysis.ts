@@ -280,14 +280,6 @@ export function appleWatchFieldsWithGoal(): (keyof AppleWatchData)[] {
 // Tarefas — julgamento crítico, construtivo, qualitativo
 // ---------------------------------------------------------------------------
 
-const OBJECTIVE_KEYWORDS: Record<string, string[]> = {
-  "Perda de peso": ["dieta", "déficit", "caloria", "peso", "corrida", "cardio", "jejum"],
-  "Melhora na cognição": ["estudo", "leitura", "livro", "aula", "curso", "foco", "meditar", "meditação"],
-  "Manutenção da massa muscular": ["treino", "academia", "musculação", "proteína", "whey"],
-  "Vitaminas para cabelo": ["suplemento", "vitamina", "cabelo"],
-  Produtividade: ["trabalho", "tarefa", "reunião", "projeto", "produtiv", "planejamento", "organiz"],
-};
-
 export interface TaskJudgmentReport {
   julgamento: Judgment;
   texto: string;
@@ -342,6 +334,150 @@ export function judgeTasks(tasks: TaskItem[], objetivos: string[]): TaskJudgment
   }
 
   return { julgamento, texto: partes.join(" ") };
+}
+
+export interface TaskAnalysisDetail {
+  tarefasRegistradas: number;
+  tarefasComDetalhe: number;
+  proporcaoDetalhe: number;
+  objetivo: {
+    nome: string;
+    atendido: boolean;
+    tarefasRelacionadas: string[];
+  }[];
+  tarefasIndividuais: {
+    tarefa: string;
+    como: string;
+    qualidade: "excelente" | "boa" | "adequada" | "fraca" | "muito_fraca";
+    observacoes: string[];
+  }[];
+  padroes: string[];
+  recomendacoes: string[];
+  analiseConstrutiva: string;
+}
+
+const OBJECTIVE_KEYWORDS: Record<string, string[]> = {
+  "Cognição (estudos, pesquisa, aprender)": ["estud", "pesquis", "aprend", "lei", "aproveitar", "ler", "plano", "planejamento"],
+  "Saúde mental (terapia, meditação, mindfulness)": ["terap", "medita", "mindfull", "psicolog", "saud", "ment", "ansied", "ansid"],
+  "Composição corporal (exercícios, nutrição)": [
+    "exerc",
+    "muscula",
+    "treino",
+    "malh",
+    "corrida",
+    "cardio",
+    "nutri",
+    "dieta",
+    "prote",
+    "calorica",
+  ],
+  "Criatividade (art, design, música)": ["art", "design", "musica", "criat", "desenh", "pintura", "escrever", "escreve"],
+  "Conexão interpessoal (relacionamentos, amigos, família)": ["amigo", "familia", "relacion", "convers", "ligou", "saiu", "encontr"],
+  Diversão: ["diversão", "divers", "fun", "jogo", "jogou", "entretenim", "lazer", "cinem", "filmes"],
+};
+
+export function analyzeTasksInDepth(tasks: TaskItem[], objetivos: string[]): TaskAnalysisDetail {
+  const tarefasComDetalhe = tasks.filter((t) => (t.como ?? "").trim().length >= 5).length;
+  const proporcaoDetalhe = tasks.length > 0 ? tarefasComDetalhe / tasks.length : 0;
+
+  const textoCompleto = tasks.map((t) => `${t.oQueFoiFeito} ${t.como ?? ""}`).join(" ").toLowerCase();
+
+  const objetivosAnalise = objetivos.map((obj) => ({
+    nome: obj,
+    atendido: (OBJECTIVE_KEYWORDS[obj] ?? []).some((kw) => textoCompleto.includes(kw)),
+    tarefasRelacionadas: tasks
+      .filter((t) => (OBJECTIVE_KEYWORDS[obj] ?? []).some((kw) => `${t.oQueFoiFeito} ${t.como ?? ""}`.toLowerCase().includes(kw)))
+      .map((t) => t.oQueFoiFeito),
+  }));
+
+  const tarefasIndividuais = tasks.map((t) => {
+    const comLength = (t.como ?? "").trim().length;
+    const taskLength = t.oQueFoiFeito.trim().length;
+    let qualidade: "excelente" | "boa" | "adequada" | "fraca" | "muito_fraca";
+    const observacoes: string[] = [];
+
+    if (comLength >= 20 && taskLength >= 15) {
+      qualidade = "excelente";
+      observacoes.push("Excelente detalhe — processo claramente descrito");
+    } else if (comLength >= 10 && taskLength >= 10) {
+      qualidade = "boa";
+      observacoes.push("Bom nível de detalhe para análise");
+    } else if (comLength >= 5 || taskLength >= 15) {
+      qualidade = "adequada";
+      observacoes.push("Detalhe mínimo capturando o essencial");
+    } else if (comLength >= 2 || taskLength >= 8) {
+      qualidade = "fraca";
+      observacoes.push("Falta contexto — como/por quê não descrito");
+    } else {
+      qualidade = "muito_fraca";
+      observacoes.push("Muito genérico — impossível extrair aprendizado");
+    }
+
+    return {
+      tarefa: t.oQueFoiFeito,
+      como: t.como ?? "(não descrito)",
+      qualidade,
+      observacoes,
+    };
+  });
+
+  const padroes: string[] = [];
+  if (tarefasIndividuais.filter((t) => t.qualidade === "excelente").length >= tasks.length * 0.6) {
+    padroes.push("✓ Padrão de registro de alta qualidade — registros detalhados e acionáveis");
+  } else if (tarefasIndividuais.filter((t) => t.qualidade === "fraca" || t.qualidade === "muito_fraca").length >= tasks.length * 0.5) {
+    padroes.push("⚠ Padrão de registro superficial — faltam detalhes sobre processo e contexto");
+  }
+
+  const atendidosCount = objetivosAnalise.filter((o) => o.atendido).length;
+  if (atendidosCount === objetivos.length) {
+    padroes.push("✓ Todos os objetivos foram tocados hoje");
+  } else if (atendidosCount === 0) {
+    padroes.push("⚠ Nenhum objetivo foi tocado — dia reativo, sem foco estratégico");
+  } else if (atendidosCount >= objetivos.length / 2) {
+    padroes.push(`✓ ${atendidosCount} de ${objetivos.length} objetivos foram cobertos`);
+  }
+
+  if (tasks.length >= 5) {
+    padroes.push("✓ Volume saudável de tarefas registradas");
+  } else if (tasks.length <= 2) {
+    padroes.push("⚠ Muito poucas tarefas registradas — pode indicar dia reativo");
+  }
+
+  const recomendacoes: string[] = [];
+  if (proporcaoDetalhe < 0.5) {
+    recomendacoes.push("Registre o 'como' para cada tarefa — isso permite análise de processo, não só resultado. Exemplo: 'Estudi Neuroanatomia' → 'Estudi Neuroanatomia usando flashcards de Anki, 45 min'");
+  }
+  if (atendidosCount < objetivos.length) {
+    const ignorados = objetivosAnalise.filter((o) => !o.atendido).map((o) => o.nome);
+    recomendacoes.push(`${ignorados.join(", ")} não foram tocados hoje — amanhã, dedique tempo explícito a ${ignorados.length === 1 ? "esse objetivo" : "esses objetivos"}`);
+  }
+  if (tasks.length < 3) {
+    recomendacoes.push("Tente registrar pelo menos 3 tarefas por dia — mesmo pequenas — para ter visibilidade do padrão");
+  }
+  if (tarefasComDetalhe === 0 && tasks.length > 0) {
+    recomendacoes.push("Importante: comece a registrar o 'como' em cada tarefa. Sem isso, é impossível diagnosticar bloqueios de processo");
+  }
+
+  const analiseConstrutiva = `
+    Seu dia foi marcado por ${tasks.length} tarefa(s) registrada(s). Delas, ${tarefasComDetalhe} têm detalhe suficiente para análise (${(proporcaoDetalhe * 100).toFixed(0)}%).
+
+    ${atendidosCount === objetivos.length ? `Você tocou todos os ${objetivos.length} objetivos — excelente distribuição de foco.` : atendidosCount === 0 ? "Nenhum objetivo foi tocado — o dia foi totalmente reativo. Isso é normal ocasionalmente, mas se virar padrão, é sinal de falta de planejamento." : `Você cobriu ${atendidosCount} de ${objetivos.length} objetivos — boa cobertura.`}
+
+    ${proporcaoDetalhe >= 0.7 ? "Seus registros têm excelente qualidade — descrevem não só o quê, mas como. Isso permite aprendizado real." : proporcaoDetalhe >= 0.5 ? "Bom equilíbrio entre quantidade e qualidade nos registros." : "Seus registros são principalmente títulos — faltam 'como' e contexto. Isso limita a análise a contar tarefas, sem aprender do processo."}
+
+    A métrica que importa não é só volume de tarefas, mas qualidade do registro. Um dia com 3 tarefas bem detalhadas é mais valioso que 10 títulos genéricos.
+  `.trim();
+
+  return {
+    tarefasRegistradas: tasks.length,
+    tarefasComDetalhe,
+    proporcaoDetalhe,
+    objetivo: objetivosAnalise,
+    tarefasIndividuais,
+    padroes,
+    recomendacoes,
+    analiseConstrutiva,
+  };
 }
 
 // ---------------------------------------------------------------------------

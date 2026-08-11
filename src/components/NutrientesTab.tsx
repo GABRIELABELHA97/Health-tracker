@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useConfig } from "../hooks/useConfig";
 import { buildNutrientRows, generateNutrientAnalysis, type NutrientAnalysisReport } from "../utils/analysis";
 import { getSuggestionsForNutrient } from "../data/nutrientSuggestions";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import JudgmentBadge from "./JudgmentBadge";
+import SaveStatusButton from "./SaveStatusButton";
 
 function fmt(n: number, unit: string) {
   const digits = unit === "mg" || unit === "mcg" || unit === "kcal" ? 0 : 1;
@@ -11,13 +13,22 @@ function fmt(n: number, unit: string) {
 
 export default function NutrientesTab({ date }: { date: string }) {
   const { config } = useConfig();
+  const { status, markSaving, markSaved } = useSaveStatus();
   const rows = buildNutrientRows(date, config);
   const [report, setReport] = useState<NutrientAnalysisReport | null>(null);
+
+  function handleSave() {
+    markSaving();
+    setTimeout(() => markSaved(), 300);
+  }
 
   return (
     <>
       <div className="card">
-        <h2>Nutrientes</h2>
+        <div className="row-between">
+          <h2>Nutrientes</h2>
+          <SaveStatusButton status={status} onClick={handleSave} />
+        </div>
         <p className="muted">
           Objetivo: {config.objetivos.join(", ")}. Metas semanais editáveis em Perfil / metas.
         </p>
