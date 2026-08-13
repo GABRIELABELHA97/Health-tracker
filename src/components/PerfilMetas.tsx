@@ -3,6 +3,7 @@ import { useConfig } from "../hooks/useConfig";
 import { DEFAULT_WEEKLY_GOALS, NUTRIENT_META, NUTRIENT_ORDER, getWeeklyGoals } from "../data/nutrientGoals";
 import type { NutrientKey, IngredientNutrition, Supplement } from "../types";
 import type { Profile } from "../utils/storage";
+import { exportAllData, downloadDataAsFile, importData, parseUploadedFile } from "../utils/dataSync";
 
 export default function PerfilMetas({ onClose }: { onClose: () => void }) {
   const { config, update } = useConfig();
@@ -11,6 +12,7 @@ export default function PerfilMetas({ onClose }: { onClose: () => void }) {
   const [objetivosText, setObjetivosText] = useState(config.objetivos.join(", "));
   const [newIng, setNewIng] = useState({ nome: "", categoria: "", porcao: "", calorias: "", proteina: "" });
   const [newSup, setNewSup] = useState({ nome: "", unidade: "doses", referencia: "" });
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   function setProfileField<K extends keyof Profile>(key: K, value: Profile[K]) {
     update((prev) => ({ ...prev, profile: { ...prev.profile, [key]: value } }));
@@ -64,6 +66,39 @@ export default function PerfilMetas({ onClose }: { onClose: () => void }) {
     update((prev) => ({ ...prev, customSupplements: prev.customSupplements.filter((s) => s.id !== id) }));
   }
 
+  function handleExport() {
+    try {
+      const data = exportAllData();
+      downloadDataAsFile(data);
+      setSyncMessage("✓ Dados exportados com sucesso!");
+      setTimeout(() => setSyncMessage(null), 3000);
+    } catch (e) {
+      setSyncMessage("✗ Erro ao exportar dados");
+    }
+  }
+
+  function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    parseUploadedFile(file)
+      .then((data) => {
+        const result = importData(data);
+        setSyncMessage(result.success ? `✓ ${result.message}` : `✗ ${result.message}`);
+        if (result.success) {
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          setTimeout(() => setSyncMessage(null), 3000);
+        }
+      })
+      .catch((error) => {
+        setSyncMessage(`✗ ${error.message}`);
+        setTimeout(() => setSyncMessage(null), 3000);
+      });
+
+    e.target.value = "";
+  }
+
   return (
     <>
       <div className="row-between">
@@ -71,6 +106,39 @@ export default function PerfilMetas({ onClose }: { onClose: () => void }) {
         <button className="btn" onClick={onClose}>
           ← Voltar
         </button>
+      </div>
+
+      {syncMessage && (
+        <div style={{
+          background: syncMessage.startsWith("✓") ? "#d4edda" : "#f8d7da",
+          border: `1px solid ${syncMessage.startsWith("✓") ? "#c3e6cb" : "#f5c6cb"}`,
+          borderRadius: 4,
+          padding: 12,
+          marginBottom: 16,
+          color: syncMessage.startsWith("✓") ? "#155724" : "#721c24",
+          fontSize: "0.9rem"
+        }}>
+          {syncMessage}
+        </div>
+      )}
+
+      <div className="card">
+        <h2>Sincronizar dados</h2>
+        <p className="muted">Exporte seus dados para transferir entre dispositivos ou fazer backup.</p>
+        <div className="row" style={{ marginTop: 10, gap: 8 }}>
+          <button className="btn btn-primary" onClick={handleExport}>
+            ⬇ Exportar dados
+          </button>
+          <label className="btn btn-primary" style={{ cursor: "pointer", margin: 0 }}>
+            ⬆ Importar dados
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              style={{ display: "none" }}
+            />
+          </label>
+        </div>
       </div>
 
       <div className="card">
