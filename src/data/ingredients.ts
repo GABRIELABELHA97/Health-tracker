@@ -232,6 +232,15 @@ export const INGREDIENTS: IngredientNutrition[] = [
     observacao: "Pó torrado e moído é 'não significativo' pela ANVISA — valor é da bebida coada, desprezível.",
   },
   {
+    id: "cafe-orfeu-bourbon-amarelo",
+    nome: "Café Orfeu Bourbon Amarelo (coado, sem açúcar)",
+    categoria: "Bebidas",
+    porcaoDescricao: "1 xícara (~200ml)",
+    porPorcao: { calorias: 3 },
+    fonte: "estimativa_padrao",
+    observacao: "Café de qualidade premium - origem Bourbon amarelo. Valores nutricionais são da bebida coada apenas (praticamente desprezível). Cafeína estimada: ~95mg por xícara.",
+  },
+  {
     id: "coca-cola",
     nome: "Coca-Cola",
     categoria: "Bebidas",
